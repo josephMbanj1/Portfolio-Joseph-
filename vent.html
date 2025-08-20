@@ -1,0 +1,1284 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GérancePro - Gestion des Ventes</title>
+    <link href="https://fonts.googleapis.com/css2?family=Bookman&display=swap" rel="stylesheet">
+    <style>
+        /* --- Variables de Couleur (Harmonisées avec index.html et stock.html) --- */
+        :root {
+            --bg-color: #f0f2f5; /* Fond très clair, presque blanc (main content background color if no gradient) */
+            --sidebar-bg: #1a2c5b; /* Bleu foncé profond pour la barre latérale */
+            --text-light: #ffffff; /* Texte blanc pur (pour sidebar, header sur fond foncé) */
+            --text-dark: #2c3e50; /* Gris très foncé pour le texte principal (sur fond clair) */
+            --accent-color: #f39c12; /* Or vif pour l'accent et les éléments clés */
+            --hover-light: rgba(255, 255, 255, 0.2); /* Léger survol pour les liens clairs */
+
+            /* Specific to Sales Page - adapted to new palette */
+            --card-bg: #FFFFFF; /* Fond des cartes/sections comme la table, modal */
+            --border-light: #e0e0e0; /* Bordures subtiles */
+            --input-border: #d0d0d0; /* Bordure des inputs */
+            --input-focus-border: var(--accent-color); /* Bordure focus en or */
+            --input-focus-shadow: rgba(243, 156, 18, 0.3); /* Ombre focus en or transparent */
+
+            /* Buttons */
+            --btn-primary: #28a745; /* Vert pour Vendre/Confirmer - Action Positive */
+            --btn-primary-hover: #218838; /* Vert plus foncé */
+            --btn-secondary: #007bff; /* Bleu pour Ajouter au panier/Modifier */
+            --btn-secondary-hover: #0056b3; /* Bleu plus foncé */
+            --btn-danger: #e74c3c; /* Rouge pour Supprimer/Annuler */
+            --btn-danger-hover: #c0392b; /* Rouge plus foncé */
+            --btn-info: #6c757d; /* Gris pour Imprimer/Réinitialiser */
+            --btn-info-hover: #5a6268;
+
+            /* Status Badges - From Stock Page, for consistency */
+            --status-en-stock: #2ECC71; /* Vert */
+            --status-faible: #F39C12; /* Orange (same as accent for consistency) */
+            --status-rupture: #E74C3C; /* Rouge */
+
+            /* Main Content Gradient - (optional, can be adapted from index.html if desired) */
+            --main-gradient-start: #2c3e50; /* Deep charcoal/black for a rich start */
+            --main-gradient-middle: #87CEEB; /* Sky Blue */
+            --main-gradient-end: #CC8800; /* Rich Amber/Deep Gold for 'Night Yellow' */
+        }
+
+        body {
+            font-family: 'Bookman', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            min-height: 100vh;
+            background-color: var(--bg-color); 
+            color: var(--text-dark);
+        }
+
+        /* --- Sidebar Navigation (Copied from stock.html) --- */
+        .sidebar {
+            width: 250px;
+            background-color: var(--sidebar-bg);
+            color: var(--text-light);
+            padding: 20px 0;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 5px 0 20px rgba(0, 0, 0, 0.4); 
+            position: relative;
+            z-index: 10;
+        }
+
+        .sidebar .logo {
+            text-align: center;
+            margin-bottom: 40px;
+            font-size: 28px;
+            font-weight: bold;
+            color: var(--accent-color); 
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+        }
+
+        .sidebar nav ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .sidebar nav ul li {
+            margin-bottom: 8px; 
+        }
+
+        .sidebar nav ul li a {
+            display: flex;
+            align-items: center;
+            padding: 12px 25px; 
+            color: var(--text-light);
+            text-decoration: none;
+            font-size: 16px;
+            transition: background-color 0.3s ease, color 0.3s ease, transform 0.2s ease;
+            border-radius: 5px; 
+        }
+
+        .sidebar nav ul li a .icon {
+            margin-right: 15px;
+            font-size: 20px;
+        }
+
+        .sidebar nav ul li a:hover {
+            background-color: var(--hover-light);
+            color: var(--accent-color); 
+            transform: translateX(5px); 
+        }
+        
+        .sidebar nav ul li a.active {
+            background-color: rgba(255, 255, 255, 0.1); 
+            color: var(--accent-color); 
+            border-left: 5px solid var(--accent-color); 
+            padding-left: 20px; 
+        }
+
+        /* --- Main Content Area (Copied from stock.html) --- */
+        .main-content {
+            flex-grow: 1;
+            padding: 40px; 
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            overflow-y: auto;
+            background: linear-gradient(135deg, var(--main-gradient-start) 0%, var(--main-gradient-middle) 50%, var(--main-gradient-end) 100%);
+            color: var(--text-light); 
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--accent-color); 
+        }
+
+        .header h1 {
+            font-size: 34px; 
+            color: var(--text-light); 
+            margin: 0;
+            font-weight: 700;
+            text-shadow: 0.5px 0.5px 1px rgba(0, 0, 0, 0.3);
+        }
+
+        .header .user-info {
+            display: flex;
+            align-items: center;
+            font-size: 16px;
+            color: var(--text-light); 
+        }
+
+        .header .user-info .icon {
+            margin-right: 10px;
+            font-size: 20px;
+            color: var(--accent-color); 
+        }
+
+        /* --- Sales Page Specific Styles --- */
+        .sales-container {
+            display: grid;
+            grid-template-columns: 2fr 1fr; /* Main sales area and cart summary */
+            gap: 30px;
+            flex-grow: 1;
+        }
+
+        .product-selection-area, .cart-summary-area {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            padding: 25px;
+            color: var(--text-dark);
+        }
+
+        .product-selection-area h2, .cart-summary-area h2 {
+            font-size: 24px;
+            color: var(--text-dark);
+            margin-bottom: 20px;
+            border-bottom: 2px solid var(--accent-color);
+            padding-bottom: 10px;
+        }
+
+        .search-input-group {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .search-input-group input {
+            width: calc(100% - 24px);
+            padding: 12px;
+            border: 1px solid var(--input-border);
+            border-radius: 6px;
+            font-size: 16px;
+            outline: none;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+            color: var(--text-dark);
+            background-color: var(--bg-color);
+        }
+
+        .search-input-group input:focus {
+            border-color: var(--input-focus-border);
+            box-shadow: 0 0 0 3px var(--input-focus-shadow);
+        }
+
+        .product-suggestions {
+            position: absolute;
+            top: 100%; /* Position below the input */
+            left: 0;
+            right: 0;
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-light);
+            border-radius: 6px;
+            max-height: 250px;
+            overflow-y: auto;
+            z-index: 1000;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            display: none; /* Hidden by default */
+        }
+
+        .product-suggestions ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .product-suggestions li {
+            padding: 12px 15px;
+            cursor: pointer;
+            border-bottom: 1px solid var(--border-light);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background-color 0.2s ease;
+        }
+
+        .product-suggestions li:last-child {
+            border-bottom: none;
+        }
+
+        .product-suggestions li:hover {
+            background-color: var(--bg-color);
+        }
+
+        .product-suggestions li .suggestion-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .product-suggestions li .suggestion-name {
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .product-suggestions li .suggestion-details {
+            font-size: 13px;
+            color: #666;
+        }
+
+        /* Status Icon Styling */
+        .product-suggestions li .status-icon {
+            font-size: 20px; 
+            margin-left: 10px;
+            vertical-align: middle;
+            font-weight: bold; /* Make the icons bolder */
+        }
+        
+        .product-suggestions li.status-en-stock .status-icon {
+            color: var(--status-en-stock); /* Green */
+        }
+        .product-suggestions li.status-faible .status-icon {
+            color: var(--status-faible); /* Orange */
+        }
+        .product-suggestions li.status-rupture .status-icon {
+            color: var(--status-rupture); /* Red */
+        }
+
+        /* Product details for adding to cart */
+        .product-add-form {
+            display: none; /* Hidden by default, shown when a product is selected */
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border-light);
+        }
+
+        .product-add-form .form-group {
+            margin-bottom: 15px;
+        }
+
+        .product-add-form label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+
+        .product-add-form input[type="number"],
+        .product-add-form input[type="text"] {
+            width: calc(100% - 24px);
+            padding: 10px;
+            border: 1px solid var(--input-border);
+            border-radius: 4px;
+            font-size: 15px;
+            color: var(--text-dark);
+            background-color: var(--bg-color);
+        }
+        .product-add-form input[type="number"]:focus,
+        .product-add-form input[type="text"]:focus {
+            border-color: var(--input-focus-border);
+            box-shadow: 0 0 0 2px var(--input-focus-shadow);
+        }
+
+        .product-add-form .btn-add-to-cart {
+            background-color: var(--btn-secondary);
+            color: var(--text-light);
+            padding: 10px 15px;
+            border-radius: 5px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background-color 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .product-add-form .btn-add-to-cart:hover {
+            background-color: var(--btn-secondary-hover);
+        }
+
+        /* Cart display */
+        .cart-items {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            border: 1px solid var(--border-light);
+            border-radius: 6px;
+            max-height: 350px;
+            overflow-y: auto;
+            margin-bottom: 20px;
+        }
+
+        .cart-items li {
+            padding: 12px 15px;
+            border-bottom: 1px dashed var(--border-light);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .cart-items li:last-child {
+            border-bottom: none;
+        }
+
+        .cart-item-info {
+            flex-grow: 1;
+        }
+
+        .cart-item-name {
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .cart-item-details {
+            font-size: 14px;
+            color: #555;
+        }
+
+        .cart-item-actions button {
+            background: none;
+            border: none;
+            font-size: 16px;
+            cursor: pointer;
+            margin-left: 10px;
+            color: var(--btn-danger);
+            transition: color 0.2s ease, transform 0.2s ease;
+        }
+        .cart-item-actions button:hover {
+            color: var(--btn-danger-hover);
+            transform: scale(1.1);
+        }
+
+        .cart-summary {
+            padding-top: 15px;
+            border-top: 2px solid var(--accent-color);
+            margin-top: 20px;
+        }
+
+        .cart-summary div {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 17px;
+            font-weight: 600;
+        }
+
+        .cart-summary .total {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--accent-color);
+            margin-top: 15px;
+        }
+        
+        .payment-section {
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid var(--border-light);
+        }
+
+        .payment-section .form-group {
+            margin-bottom: 15px;
+        }
+
+        .payment-section label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+
+        .payment-section input[type="number"] {
+            width: calc(100% - 24px);
+            padding: 10px;
+            border: 1px solid var(--input-border);
+            border-radius: 4px;
+            font-size: 15px;
+            color: var(--text-dark);
+            background-color: var(--bg-color);
+        }
+
+        .payment-section input[type="number"]:focus {
+            border-color: var(--input-focus-border);
+            box-shadow: 0 0 0 2px var(--input-focus-shadow);
+        }
+
+        .payment-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .payment-buttons .btn {
+            flex-grow: 1;
+        }
+
+        .btn-sell {
+            background-color: var(--btn-primary);
+            color: var(--text-light);
+        }
+        .btn-sell:hover {
+            background-color: var(--btn-primary-hover);
+        }
+
+        .btn-reset-cart {
+            background-color: var(--btn-danger);
+            color: var(--text-light);
+        }
+        .btn-reset-cart:hover {
+            background-color: var(--btn-danger-hover);
+        }
+
+        /* --- Invoice Modal Styles (NEW) --- */
+        #invoiceModal {
+            display: none; /* Hidden by default */
+            position: fixed;
+            z-index: 2000; /* Higher than other modals */
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.8); /* Darker overlay */
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        #invoiceModal .modal-content {
+            background-color: #fefefe; /* White background for invoice */
+            margin: auto;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5); /* Stronger shadow */
+            width: 95%;
+            max-width: 700px;
+            position: relative;
+            animation: fadeIn 0.4s ease-out;
+            color: var(--text-dark);
+            font-size: 14px;
+        }
+
+        #invoiceModal .modal-close-btn {
+            color: #aaa;
+            position: absolute;
+            top: 15px;
+            right: 25px;
+            font-size: 30px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+        #invoiceModal .modal-close-btn:hover,
+        #invoiceModal .modal-close-btn:focus {
+            color: #333;
+        }
+
+        .invoice-header {
+            text-align: center;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #333;
+            padding-bottom: 15px;
+        }
+        .invoice-header h2 {
+            margin: 0;
+            font-size: 28px;
+            color: #333;
+            text-transform: uppercase;
+        }
+        .invoice-header p {
+            margin: 5px 0 0;
+            font-size: 13px;
+            color: #666;
+        }
+
+        .invoice-details {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            font-size: 13px;
+        }
+        .invoice-details div p {
+            margin: 3px 0;
+        }
+        .invoice-details strong {
+            color: #333;
+        }
+
+        .invoice-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        .invoice-table th, .invoice-table td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+        .invoice-table th {
+            background-color: #f2f2f2;
+            font-weight: 600;
+            color: #333;
+        }
+        .invoice-table .total-row td {
+            font-weight: 700;
+            background-color: #e9ecef;
+        }
+
+        .invoice-summary {
+            text-align: right;
+            margin-top: 20px;
+        }
+        .invoice-summary p {
+            margin: 5px 0;
+            font-size: 15px;
+            font-weight: 600;
+        }
+        .invoice-summary .grand-total {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--accent-color);
+            border-top: 2px solid var(--accent-color);
+            padding-top: 10px;
+            margin-top: 15px;
+        }
+
+        .invoice-footer {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #ddd;
+            font-size: 12px;
+            color: #888;
+        }
+
+        .invoice-actions {
+            text-align: center;
+            margin-top: 30px;
+        }
+        .invoice-actions .btn-print {
+            background-color: var(--btn-secondary);
+            color: var(--text-light);
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background-color 0.3s ease;
+        }
+        .invoice-actions .btn-print:hover {
+            background-color: var(--btn-secondary-hover);
+        }
+
+        /* Print Specific Styles */
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            #invoiceModal, #invoiceModal * {
+                visibility: visible;
+            }
+            #invoiceModal {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                height: auto;
+                background-color: white;
+                box-shadow: none;
+                display: block !important; /* Ensure it's displayed for printing */
+                overflow: visible;
+                padding: 0;
+            }
+            #invoiceModal .modal-content {
+                width: 100%;
+                max-width: 100%;
+                box-shadow: none;
+                border: none;
+                padding: 0;
+                border-radius: 0;
+            }
+            #invoiceModal .modal-close-btn, .invoice-actions {
+                display: none; /* Hide close button and print button during print */
+            }
+        }
+
+        /* Footer (Copied from stock.html) */
+        .footer {
+            text-align: center;
+            padding: 25px; 
+            color: var(--text-light); 
+            font-size: 14px;
+            margin-top: auto; 
+            border-top: 2px solid var(--accent-color); 
+        }
+
+        /* Utility classes */
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="logo">GérancePro</div>
+        <nav>
+            <ul>
+                <li><a href="index.html"><span class="icon">📊</span> Tableau de Bord</a></li>
+                <li><a href="stock.html"><span class="icon">📦</span> Gestion des Stocks</a></li>
+                <li><a href="ventes.html" class="active"><span class="icon">🛒</span> Gestion des Ventes</a></li>
+                <li><a href="rapports.html"><span class="icon">📈</span> Rapports et Statistiques</a></li>
+                <li><a href="fournisseurs.html"><span class="icon">🚚</span> Gestion des Fournisseurs</a></li>
+                <li><a href="parametres.html"><span class="icon">⚙️</span> Paramètres</a></li>
+            </ul>
+        </nav>
+    </div>
+
+    <div class="main-content">
+        <header class="header">
+            <h1>Gestion des Ventes</h1>
+            <div class="user-info">
+                <span class="icon">👤</span> <span>Bonjour, Admin !</span>
+            </div>
+        </header>
+
+        <div class="sales-container">
+            <section class="product-selection-area">
+                <h2>Rechercher un Produit</h2>
+                <div class="search-input-group">
+                    <input type="text" id="productSearchInput" placeholder="Rechercher par nom ou référence..." autocomplete="off">
+                    <div class="product-suggestions" id="productSuggestions">
+                        <ul>
+                            </ul>
+                    </div>
+                </div>
+
+                <div class="product-add-form" id="productAddForm">
+                    <input type="hidden" id="selectedProductId">
+                    <div class="form-group">
+                        <label for="selectedProductName">Produit sélectionné:</label>
+                        <input type="text" id="selectedProductName" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="productQuantityToSell">Quantité à vendre:</label>
+                        <input type="number" id="productQuantityToSell" min="1" value="1">
+                    </div>
+                    <div class="form-group">
+                        <label for="productPricePerUnit">Prix unitaire (F CFA):</label>
+                        <input type="number" id="productPricePerUnit" readonly>
+                    </div>
+                    <button class="btn btn-add-to-cart" id="addToCartBtn"><span class="icon">➕</span> Ajouter au panier</button>
+                </div>
+            </section>
+
+            <section class="cart-summary-area">
+                <h2>Panier <span id="cartItemCount">(0)</span></h2>
+                <ul class="cart-items" id="cartItemsList">
+                    </ul>
+
+                <div class="cart-summary">
+                    <div>Sous-total: <span id="subTotal">0.00 F CFA</span></div>
+                    <div>TVA (0%): <span id="vatAmount">0.00 F CFA</span></div>
+                    <div class="total">Total à Payer: <span id="grandTotal">0.00 F CFA</span></div>
+                </div>
+
+                <div class="payment-section">
+                    <div class="form-group">
+                        <label for="amountPaid">Montant Payé (F CFA):</label>
+                        <input type="number" id="amountPaid" min="0" value="0" step="0.01">
+                    </div>
+                    <div>Monnaie à Rendre: <span id="changeDue">0.00 F CFA</span></div>
+                    <div class="payment-buttons">
+                        <button class="btn btn-sell" id="completeSaleBtn"><span class="icon">✅</span> Finaliser la Vente</button>
+                        <button class="btn btn-reset-cart" id="resetCartBtn"><span class="icon">🔄</span> Réinitialiser Panier</button>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <footer class="footer">
+            &copy; 2025 GérancePro. Tous droits réservés.
+        </footer>
+    </div>
+
+    <div id="invoiceModal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close-btn">&times;</span>
+            <div id="invoiceContent">
+                <div class="invoice-header">
+                    <h2>Facture / Reçu</h2>
+                    <p>Quincaillerie GérancePro</p>
+                    <p>Adresse: 123 Rue du Commerce, Kinshasa</p>
+                    <p>Téléphone: +243 812 345 678 | Email: contact@gerancepro.com</p>
+                </div>
+                <div class="invoice-details">
+                    <div>
+                        <p><strong>Nº Facture:</strong> <span id="invoiceNumber"></span></p>
+                        <p><strong>Date:</strong> <span id="invoiceDate"></span></p>
+                        <p><strong>Heure:</strong> <span id="invoiceTime"></span></p>
+                    </div>
+                    <div>
+                        <p><strong>Vendeur:</strong> Admin</p>
+                        <p><strong>Client:</strong> <span id="clientName">Client Anonyme</span></p>
+                    </div>
+                </div>
+                <table class="invoice-table">
+                    <thead>
+                        <tr>
+                            <th>Description</th>
+                            <th>Qté</th>
+                            <th>Prix Unitaire</th>
+                            <th>Total</th>
+                        </tr>
+                    </thead>
+                    <tbody id="invoiceItemsTable">
+                        </tbody>
+                    <tfoot>
+                        <tr class="total-row">
+                            <td colspan="3" style="text-align: right;">Sous-total:</td>
+                            <td><span id="invoiceSubTotal">0.00 F CFA</span></td>
+                        </tr>
+                        <tr class="total-row">
+                            <td colspan="3" style="text-align: right;">TVA (0%):</td>
+                            <td><span id="invoiceVatAmount">0.00 F CFA</span></td>
+                        </tr>
+                        <tr class="total-row">
+                            <td colspan="3" style="text-align: right;">Total à Payer:</td>
+                            <td><span id="invoiceGrandTotal">0.00 F CFA</span></td>
+                        </tr>
+                        <tr class="total-row">
+                            <td colspan="3" style="text-align: right;">Montant Payé:</td>
+                            <td><span id="invoiceAmountPaid">0.00 F CFA</span></td>
+                        </tr>
+                        <tr class="total-row">
+                            <td colspan="3" style="text-align: right;">Monnaie à Rendre:</td>
+                            <td><span id="invoiceChangeDue">0.00 F CFA</span></td>
+                        </tr>
+                    </tfoot>
+                </table>
+                <div class="invoice-footer">
+                    <p>Merci pour votre achat chez Quincaillerie GérancePro !</p>
+                    <p>Retours acceptés sous 7 jours avec ce reçu.</p>
+                </div>
+            </div>
+            <div class="invoice-actions">
+                <button class="btn btn-print" id="printInvoiceBtn">Imprimer le Reçu</button>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        // Data structure for GérancePro (using localStorage for persistence)
+        let appData = {
+            products: [], // Array of product objects
+            categories: [], // Categories should be loaded from localStorage, if not present, default
+            sales: { 
+                currentDaySales: 0, 
+                currentDayTransactions: 0, 
+                currentMonthProfit: 0, 
+                daily: [], 
+                monthly: [], 
+                transactions: []
+            },
+            stock: { lowStockCount: 0, lowStockItems: [] },
+            recentActivity: [],
+            topProducts: []
+        };
+
+        const LOCAL_STORAGE_KEY = 'geranceProData';
+
+        // --- Data Management (Load/Save) ---
+        function loadAppData() {
+            const storedData = localStorage.getItem(LOCAL_STORAGE_KEY);
+            if (storedData) {
+                try {
+                    const parsedData = JSON.parse(storedData);
+                    // Merge loaded data with default structure to ensure all keys exist
+                    appData = { 
+                        ...appData, 
+                        ...parsedData,
+                        sales: { ...(appData.sales || {}), ...(parsedData.sales || {}) },
+                        stock: { ...(appData.stock || {}), ...(parsedData.stock || {}) }
+                    };
+                    // Ensure sub-arrays are initialized if they were null/undefined from loaded data
+                    appData.products = appData.products || [];
+                    if (!appData.categories || appData.categories.length === 0) {
+                        appData.categories = ['Matériel de construction', 'Plomberie', 'Électricité', 'Outillage']; // Default if none
+                    }
+                    appData.sales.daily = appData.sales.daily || [];
+                    appData.sales.monthly = appData.sales.monthly || [];
+                    appData.sales.transactions = appData.sales.transactions || [];
+                    appData.stock.lowStockItems = appData.stock.lowStockItems || [];
+                    appData.recentActivity = appData.recentActivity || [];
+                    appData.topProducts = appData.topProducts || [];
+
+                    console.log("Données chargées depuis localStorage.", appData);
+                } catch (e) {
+                    console.error("Erreur lors de l'analyse des données localStorage, réinitialisation :", e);
+                    // Réinitialiser à l'état initial si les données sont corrompues
+                    resetAppDataToDefaults(); // Nouvelle fonction pour réinitialiser
+                }
+            } else {
+                console.log("Aucune donnée trouvée dans localStorage. Initialisation avec les valeurs par défaut.");
+                resetAppDataToDefaults();
+            }
+        }
+
+        function resetAppDataToDefaults() {
+            appData = {
+                products: [],
+                categories: ['Matériel de construction', 'Plomberie', 'Électricité', 'Outillage'],
+                sales: { 
+                    currentDaySales: 0, 
+                    currentDayTransactions: 0, 
+                    currentMonthProfit: 0, 
+                    daily: [], 
+                    monthly: [],
+                    transactions: []
+                },
+                stock: { lowStockCount: 0, lowStockItems: [] },
+                recentActivity: [],
+                topProducts: []
+            };
+            saveAppData(); // Enregistrer les valeurs par défaut
+        }
+
+
+        function saveAppData() {
+            localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(appData));
+        }
+
+        // --- Product related functions (from stock.html, simplified for sales) ---
+        function getProductStatus(quantity, threshold) {
+            if (quantity <= 0) return 'rupture';
+            if (quantity <= threshold) return 'faible';
+            return 'en-stock';
+        }
+
+        function updateLowStockOnDashboard() {
+            const lowStockItems = appData.products.filter(p => getProductStatus(p.quantity, p.threshold) === 'faible' || getProductStatus(p.quantity, p.threshold) === 'rupture');
+            
+            appData.stock.lowStockCount = lowStockItems.length;
+            appData.stock.lowStockItems = lowStockItems.map(item => ({
+                name: item.name,
+                quantity: item.quantity,
+                status: getProductStatus(item.quantity, item.threshold)
+            }));
+            
+            saveAppData(); 
+            console.log("Données de stock faible mises à jour pour la synchronisation du tableau de bord.");
+        }
+
+        // --- Sales Specific Logic ---
+        const productSearchInput = document.getElementById('productSearchInput');
+        const productSuggestions = document.getElementById('productSuggestions');
+        const productAddForm = document.getElementById('productAddForm');
+        const selectedProductIdInput = document.getElementById('selectedProductId');
+        const selectedProductNameInput = document.getElementById('selectedProductName');
+        const productQuantityToSellInput = document.getElementById('productQuantityToSell');
+        const productPricePerUnitInput = document.getElementById('productPricePerUnit');
+        const addToCartBtn = document.getElementById('addToCartBtn');
+
+        const cartItemsList = document.getElementById('cartItemsList');
+        const cartItemCountSpan = document.getElementById('cartItemCount');
+        const subTotalSpan = document.getElementById('subTotal');
+        const vatAmountSpan = document.getElementById('vatAmount');
+        const grandTotalSpan = document.getElementById('grandTotal');
+        const amountPaidInput = document.getElementById('amountPaid');
+        const changeDueSpan = document.getElementById('changeDue');
+        const completeSaleBtn = document.getElementById('completeSaleBtn');
+        const resetCartBtn = document.getElementById('resetCartBtn');
+
+        const invoiceModal = document.getElementById('invoiceModal');
+        const invoiceCloseBtn = invoiceModal.querySelector('.modal-close-btn');
+        const printInvoiceBtn = document.getElementById('printInvoiceBtn');
+
+        let currentCart = []; // Stores { productId, name, ref, quantity, price, originalStock, purchasePrice }
+
+        // --- Product Search and Suggestions ---
+        productSearchInput.addEventListener('input', () => {
+            const searchTerm = productSearchInput.value.toLowerCase().trim();
+            productSuggestions.innerHTML = '';
+            productSuggestions.style.display = 'none';
+            productAddForm.style.display = 'none'; // Cacher le formulaire d'ajout lorsque l'on recherche
+
+            if (searchTerm.length < 2) return;
+
+            const matchingProducts = appData.products.filter(p => 
+                p.name.toLowerCase().includes(searchTerm) || 
+                p.ref.toLowerCase().includes(searchTerm)
+            );
+
+            if (matchingProducts.length > 0) {
+                const ul = document.createElement('ul');
+                matchingProducts.forEach(product => {
+                    const li = document.createElement('li');
+                    const status = getProductStatus(product.quantity, product.threshold);
+                    let statusIcon = '';
+                    
+                    if (status === 'faible') {
+                        statusIcon = '⚠️'; // Icône d'avertissement
+                    } else if (status === 'rupture') {
+                        statusIcon = '❌'; // Icône de croix
+                    } else {
+                        statusIcon = '✔️'; // Icône par défaut "en stock"
+                    }
+                    
+                    li.classList.add(`status-${status}`); // Add class for specific styling
+                    li.innerHTML = `
+                        <div class="suggestion-info">
+                            <span class="suggestion-name">${product.name}</span>
+                            <span class="suggestion-details">Réf: ${product.ref} | Qté: ${product.quantity} | Prix: ${product.salePrice.toFixed(2)} F CFA</span>
+                        </div>
+                        <span class="status-icon">${statusIcon}</span>
+                    `;
+                    li.dataset.productId = product.id;
+                    ul.appendChild(li);
+                });
+                productSuggestions.appendChild(ul);
+                productSuggestions.style.display = 'block';
+            }
+        });
+
+        productSuggestions.addEventListener('click', (event) => {
+            const listItem = event.target.closest('li');
+            if (listItem) {
+                const productId = listItem.dataset.productId;
+                const selectedProduct = appData.products.find(p => p.id === productId);
+
+                if (selectedProduct) {
+                    selectedProductIdInput.value = selectedProduct.id;
+                    selectedProductNameInput.value = `${selectedProduct.name} (Réf: ${selectedProduct.ref})`;
+                    productPricePerUnitInput.value = selectedProduct.salePrice.toFixed(2);
+                    productQuantityToSellInput.value = 1; // Par défaut à 1
+                    productQuantityToSellInput.max = selectedProduct.quantity; // Définir la quantité max en fonction du stock
+
+                    // Si le produit est en rupture de stock, empêcher l'ajout au panier
+                    if (selectedProduct.quantity <= 0) {
+                        alert("Ce produit est en rupture de stock et ne peut pas être ajouté au panier.");
+                        addToCartBtn.disabled = true;
+                        productQuantityToSellInput.disabled = true;
+                    } else {
+                        addToCartBtn.disabled = false;
+                        productQuantityToSellInput.disabled = false;
+                    }
+
+                    productSuggestions.style.display = 'none';
+                    productSearchInput.value = ''; // Effacer le champ de recherche
+                    productAddForm.style.display = 'block'; // Afficher le formulaire d'ajout au panier
+                    productQuantityToSellInput.focus();
+                }
+            }
+        });
+
+        // Cacher les suggestions en cliquant à l'extérieur
+        document.addEventListener('click', (event) => {
+            if (!productSearchInput.contains(event.target) && !productSuggestions.contains(event.target)) {
+                productSuggestions.style.display = 'none';
+            }
+        });
+
+        // --- Add to Cart Logic ---
+        addToCartBtn.addEventListener('click', () => {
+            const productId = selectedProductIdInput.value;
+            const quantityToSell = parseInt(productQuantityToSellInput.value);
+
+            if (!productId) {
+                alert("Veuillez sélectionner un produit.");
+                return;
+            }
+            if (isNaN(quantityToSell) || quantityToSell <= 0) {
+                alert("Veuillez entrer une quantité valide (supérieure à 0).");
+                return;
+            }
+
+            const productInStock = appData.products.find(p => p.id === productId);
+
+            if (!productInStock) {
+                alert("Produit non trouvé en stock.");
+                return;
+            }
+            if (quantityToSell > productInStock.quantity) {
+                alert(`Quantité insuffisante en stock. Disponible: ${productInStock.quantity}`);
+                return;
+            }
+
+            // Vérifier si le produit est déjà dans le panier, mettre à jour la quantité
+            const itemInCart = currentCart.find(item => item.productId === productId);
+            if (itemInCart) {
+                const newQuantity = itemInCart.quantity + quantityToSell;
+                if (newQuantity > productInStock.quantity) {
+                    alert(`Vous avez déjà ${itemInCart.quantity} de ce produit dans le panier. La quantité totale (${newQuantity}) dépasse le stock disponible (${productInStock.quantity}).`);
+                    return;
+                }
+                itemInCart.quantity = newQuantity;
+            } else {
+                currentCart.push({
+                    productId: productInStock.id,
+                    name: productInStock.name,
+                    ref: productInStock.ref,
+                    quantity: quantityToSell,
+                    price: productInStock.salePrice,
+                    purchasePrice: productInStock.purchasePrice, // Pour calculer le profit plus tard
+                    originalStock: productInStock.quantity // Stocker pour la déduction de stock ultérieure
+                });
+            }
+
+            renderCart();
+            productAddForm.style.display = 'none'; // Cacher le formulaire après l'ajout au panier
+            productSearchInput.value = ''; // Effacer le champ de recherche
+        });
+
+        function renderCart() {
+            cartItemsList.innerHTML = '';
+            let subTotal = 0;
+
+            if (currentCart.length === 0) {
+                cartItemsList.innerHTML = '<li style="text-align: center; color: #888; padding: 20px;">Votre panier est vide.</li>';
+                cartItemCountSpan.textContent = '(0)';
+            } else {
+                currentCart.forEach(item => {
+                    const li = document.createElement('li');
+                    const itemTotal = item.quantity * item.price;
+                    subTotal += itemTotal;
+
+                    li.innerHTML = `
+                        <div class="cart-item-info">
+                            <span class="cart-item-name">${item.name} (${item.ref})</span>
+                            <span class="cart-item-details">${item.quantity} x ${item.price.toFixed(2)} F CFA = ${itemTotal.toFixed(2)} F CFA</span>
+                        </div>
+                        <div class="cart-item-actions">
+                            <button class="remove-from-cart-btn" data-product-id="${item.productId}" title="Retirer du panier"><span class="icon">🗑️</span></button>
+                        </div>
+                    `;
+                    cartItemsList.appendChild(li);
+                });
+                cartItemCountSpan.textContent = `(${currentCart.length})`;
+            }
+
+            const vatAmount = subTotal * 0; // Supposons 0% de TVA pour l'instant
+            const grandTotal = subTotal + vatAmount;
+
+            subTotalSpan.textContent = subTotal.toFixed(2) + ' F CFA';
+            vatAmountSpan.textContent = vatAmount.toFixed(2) + ' F CFA';
+            grandTotalSpan.textContent = grandTotal.toFixed(2) + ' F CFA';
+
+            updateChangeDue(); // Mettre à jour la monnaie à rendre chaque fois que le total du panier change
+        }
+
+        // Retirer un article du panier
+        cartItemsList.addEventListener('click', (event) => {
+            const target = event.target.closest('.remove-from-cart-btn');
+            if (target) {
+                const productIdToRemove = target.dataset.productId;
+                currentCart = currentCart.filter(item => item.productId !== productIdToRemove);
+                renderCart();
+            }
+        });
+
+        // --- Payment and Finalize Sale Logic ---
+        amountPaidInput.addEventListener('input', updateChangeDue);
+
+        function updateChangeDue() {
+            const grandTotal = parseFloat(grandTotalSpan.textContent.replace(' F CFA', ''));
+            const amountPaid = parseFloat(amountPaidInput.value) || 0;
+            const change = amountPaid - grandTotal;
+            changeDueSpan.textContent = change.toFixed(2) + ' F CFA';
+
+            // Activer/désactiver le bouton de finalisation de la vente
+            if (amountPaid >= grandTotal && currentCart.length > 0) {
+                completeSaleBtn.disabled = false;
+                completeSaleBtn.style.backgroundColor = 'var(--btn-primary)'; // Réactiver la couleur
+            } else {
+                completeSaleBtn.disabled = true;
+                completeSaleBtn.style.backgroundColor = 'var(--btn-primary-hover)'; // Griser
+            }
+        }
+
+        completeSaleBtn.addEventListener('click', () => {
+            if (currentCart.length === 0) {
+                alert("Le panier est vide. Veuillez ajouter des produits avant de finaliser la vente.");
+                return;
+            }
+
+            const grandTotal = parseFloat(grandTotalSpan.textContent.replace(' F CFA', ''));
+            const amountPaid = parseFloat(amountPaidInput.value);
+
+            if (amountPaid < grandTotal) {
+                alert("Le montant payé est insuffisant.");
+                return;
+            }
+
+            // Déduire les quantités du stock
+            let totalProfit = 0;
+            currentCart.forEach(cartItem => {
+                const productInStock = appData.products.find(p => p.id === cartItem.productId);
+                if (productInStock) {
+                    productInStock.quantity -= cartItem.quantity;
+                    const itemProfit = (cartItem.price - cartItem.purchasePrice) * cartItem.quantity;
+                    totalProfit += itemProfit;
+                }
+            });
+
+            // Enregistrer la vente
+            const now = new Date();
+            const saleId = 'SALE_' + now.getTime(); // Identifiant unique de l'achat
+            const saleDate = now.toISOString().split('T')[0]; // YYYY-MM-DD
+            const saleTime = now.toLocaleTimeString('fr-FR', {hour: '2-digit', minute:'2-digit', second:'2-digit'}); // HH:MM:SS
+
+            const newSale = {
+                id: saleId,
+                date: saleDate,
+                time: saleTime,
+                items: currentCart.map(item => ({
+                    productId: item.productId,
+                    name: item.name,
+                    ref: item.ref, // Ajouter la référence du produit
+                    quantity: item.quantity,
+                    price: item.price,
+                    total: item.quantity * item.price,
+                    profit: (item.price - item.purchasePrice) * item.quantity
+                })),
+                total: grandTotal,
+                profit: totalProfit,
+                amountPaid: amountPaid,
+                changeDue: amountPaid - grandTotal
+            };
+            appData.sales.transactions.push(newSale);
+
+            // Mettre à jour les données de ventes journalières et mensuelles
+            const todayIndex = appData.sales.daily.findIndex(d => d.date === saleDate);
+            if (todayIndex > -1) {
+                appData.sales.daily[todayIndex].totalSales += grandTotal;
+                appData.sales.daily[todayIndex].totalTransactions += 1;
+            } else {
+                appData.sales.daily.push({ date: saleDate, totalSales: grandTotal, totalTransactions: 1 });
+            }
+
+            const currentMonth = now.getFullYear() + '-' + (now.getMonth() + 1).toString().padStart(2, '0');
+            const monthIndex = appData.sales.monthly.findIndex(m => m.month === currentMonth);
+            if (monthIndex > -1) {
+                appData.sales.monthly[monthIndex].totalSales += grandTotal;
+                appData.sales.monthly[monthIndex].totalProfit += totalProfit;
+            } else {
+                appData.sales.monthly.push({ month: currentMonth, totalSales: grandTotal, totalProfit: totalProfit });
+            }
+
+            // Mettre à jour les meilleurs produits vendus (approche simple: incrémenter le compte vendu)
+            currentCart.forEach(cartItem => {
+                const topProductIndex = appData.topProducts.findIndex(tp => tp.id === cartItem.productId);
+                if (topProductIndex > -1) {
+                    appData.topProducts[topProductIndex].soldQuantity += cartItem.quantity;
+                } else {
+                    appData.topProducts.push({
+                        id: cartItem.productId,
+                        name: cartItem.name,
+                        soldQuantity: cartItem.quantity
+                    });
+                }
+            });
+            // Garder les meilleurs produits triés et limités (par exemple, top 10)
+            appData.topProducts.sort((a, b) => b.soldQuantity - a.soldQuantity);
+            appData.topProducts = appData.topProducts.slice(0, 10);
+
+
+            saveAppData();
+            updateLowStockOnDashboard(); // Recalculer le stock faible après la vente
+            generateInvoice(newSale); // Afficher la facture
+            resetCart(); // Vider le panier après la vente
+            // alert("Vente finalisée avec succès !"); // Retiré pour laisser la modale de facture être la confirmation
+        });
+
+        resetCartBtn.addEventListener('click', () => {
+            if (confirm("Êtes-vous sûr de vouloir réinitialiser le panier ? Tous les produits seront retirés.")) {
+                resetCart();
+            }
+        });
+
+        function resetCart() {
+            currentCart = [];
+            renderCart();
+            amountPaidInput.value = 0;
+            changeDueSpan.textContent = '0.00 F CFA';
+            productAddForm.style.display = 'none'; // Cacher le formulaire de produit
+            productSearchInput.value = ''; // Effacer le champ de recherche
+            completeSaleBtn.disabled = true;
+            completeSaleBtn.style.backgroundColor = 'var(--btn-primary-hover)';
+            selectedProductIdInput.value = ''; // Réinitialiser le produit sélectionné
+            selectedProductNameInput.value = '';
+            productQuantityToSellInput.value = 1;
+            productPricePerUnitInput.value = 0;
+        }
+
+        // --- Invoice Generation and Printing ---
+        function generateInvoice(saleData) {
+            document.getElementById('invoiceNumber').textContent = saleData.id;
+            document.getElementById('invoiceDate').textContent = saleData.date;
+            document.getElementById('invoiceTime').textContent = saleData.time;
+
+            const invoiceItemsTable = document.getElementById('invoiceItemsTable');
+            invoiceItemsTable.innerHTML = '';
+            saleData.items.forEach(item => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${item.name} (${item.ref})</td>
+                    <td>${item.quantity}</td>
+                    <td>${item.price.toFixed(2)} F CFA</td>
+                    <td>${item.total.toFixed(2)} F CFA</td>
+                `;
+                invoiceItemsTable.appendChild(row);
+            });
+
+            document.getElementById('invoiceSubTotal').textContent = saleData.total.toFixed(2) + ' F CFA';
+            document.getElementById('invoiceVatAmount').textContent = '0.00 F CFA'; // Supposons 0% de TVA
+            document.getElementById('invoiceGrandTotal').textContent = saleData.total.toFixed(2) + ' F CFA';
+            document.getElementById('invoiceAmountPaid').textContent = saleData.amountPaid.toFixed(2) + ' F CFA';
+            document.getElementById('invoiceChangeDue').textContent = saleData.changeDue.toFixed(2) + ' F CFA';
+
+            invoiceModal.style.display = 'flex'; // Afficher la modale de facture
+        }
+
+        invoiceCloseBtn.addEventListener('click', () => {
+            invoiceModal.style.display = 'none';
+        });
+
+        printInvoiceBtn.addEventListener('click', () => {
+            window.print();
+        });
+
+        // Initial render on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            loadAppData();
+            renderCart(); // Initialiser l'affichage du panier
+            updateChangeDue(); // Initialiser l'affichage de la monnaie à rendre et l'état du bouton
+        });
+    </script>
+</body>
+</html
