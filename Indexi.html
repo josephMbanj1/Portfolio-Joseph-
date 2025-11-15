@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AppJos - Ingénieur Logiciel Innovant</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700&family=Orbitron:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    
+    <style>
+        /* Variables CSS pour les couleurs */
+        :root {
+            --couleur-fond-primaire: #1a1a2e; /* Bleu nuit très sombre */
+            --couleur-fond-secondaire: #16213e; /* Un peu plus clair */
+            --couleur-texte-clair: #f0f0f0;
+            --couleur-accent-cyan: #0f3460; /* Cyan foncé */
+            --couleur-accent-violet: #533483; /* Violet profond */
+            --couleur-accent-rose: #e94560; /* Rose vif */
+            --couleur-bordure-photo: #e94560;
+            --couleur-icone-hover: #4e8eff; /* Cyan/Bleu Vif */
+        }
+
+        /* Styles généraux */
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: var(--couleur-fond-primaire);
+            color: var(--couleur-texte-clair);
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        a {
+            color: var(--couleur-accent-rose);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        a:hover {
+            color: var(--couleur-icone-hover);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        section {
+            padding: 100px 20px;
+            text-align: center;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 1s cubic-bezier(0.25, 0.46, 0.45, 0.94), transform 1s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        section.loaded {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        h1, h2, h3 {
+            font-family: 'Orbitron', sans-serif;
+            color: var(--couleur-texte-clair);
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            font-size: 3.8em;
+            letter-spacing: 3px;
+            /* Effet de scanline/glitch subtil */
+            text-shadow: 0 0 10px rgba(233, 69, 96, 0.5), 0 0 30px rgba(15, 52, 96, 0.8);
+        }
+        
+        /* Soulignement néon animé pour les titres de section */
+        h2 {
+            font-size: 2.5em;
+            margin-top: 40px;
+            display: inline-block;
+            padding-bottom: 5px;
+            position: relative;
+        }
+
+        h2::after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, transparent 0%, var(--couleur-accent-rose) 50%, transparent 100%);
+            bottom: 0;
+            left: 0;
+            transform: scaleX(0);
+            transition: transform 0.6s ease-out;
+        }
+
+        section.loaded h2::after {
+            transform: scaleX(1);
+        }
+
+
+        /* --- En-tête (Header) --- */
+        header {
+            background: rgba(22, 33, 62, 0.95); /* Fond semi-transparent */
+            backdrop-filter: blur(5px); /* Effet de flou sur le fond */
+            padding: 20px 0;
+            border-bottom: 1px solid rgba(233, 69, 96, 0.2);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.6);
+        }
+
+        nav ul li a::after {
+            background-color: var(--couleur-accent-rose);
+            /* Ajout d'une petite ombre pour l'effet néon */
+            box-shadow: 0 0 5px var(--couleur-accent-rose);
+        }
+
+        /* --- Section Héro (Accueil) --- */
+        #hero {
+            background: radial-gradient(circle at center, var(--couleur-fond-secondaire) 10%, var(--couleur-fond-primaire) 100%);
+            min-height: 90vh; /* Augmenté */
+        }
+        
+        /* Amélioration de l'effet de particules/étoiles légères */
+        #hero::before {
+            background: radial-gradient(circle, rgba(233, 69, 96, 0.08) 1px, transparent 1px) 0 0 / 25px 25px,
+                        radial-gradient(circle, rgba(15, 52, 96, 0.08) 1px, transparent 1px) 12.5px 12.5px / 25px 25px;
+            z-index: 1;
+        }
+
+        .profile-pic-container {
+            /* Animation de rotation subtile pour le conteneur */
+            animation: pulseBorder 2s infinite alternate, subtleRotate 20s linear infinite;
+        }
+        
+        @keyframes subtleRotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* Texte de la ligne de fonction avec effet machine à écrire */
+        #hero p {
+            font-size: 1.5em;
+            margin-bottom: 40px;
+            color: var(--couleur-texte-clair);
+            white-space: nowrap;
+            overflow: hidden;
+            border-right: .15em solid var(--couleur-accent-rose); /* Curseur */
+            animation: 
+                typing 3s steps(60, end),
+                blink-caret .75s step-end infinite;
+        }
+        
+        /* Animations de texte */
+        @keyframes typing {
+            from { width: 0 }
+            to { width: 100% }
+        }
+
+        @keyframes blink-caret {
+            from, to { border-color: transparent }
+            50% { border-color: var(--couleur-accent-rose) }
+        }
+
+        .cta-button {
+            /* Utilisation d'un gradient de couleur dynamique */
+            background-size: 200% auto;
+            transition: background-position 0.5s ease;
+        }
+
+        .cta-button:hover {
+            background-position: right center; /* Déplace le gradient au survol */
+        }
+
+        /* --- Section À Propos --- */
+        #about {
+            background-color: var(--couleur-fond-secondaire);
+            position: relative;
+        }
+        
+        /* Grille des compétences */
+        .skills-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* Plus large pour les items */
+            gap: 25px;
+            margin-top: 50px;
+        }
+
+        .skill-item {
+            background-color: var(--couleur-fond-primaire);
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.4);
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.4s ease;
+            text-align: center;
+            border: 1px solid rgba(233, 69, 96, 0.1);
+        }
+
+        .skill-item:hover {
+            transform: scale(1.05); /* Effet ressort */
+            box-shadow: 0 0 25px rgba(233, 69, 96, 0.5); /* Néon plus fort au survol */
+        }
+        
+        .skill-item i {
+            font-size: 2.5em;
+            margin-bottom: 15px;
+            color: var(--couleur-accent-rose); /* Icônes en rose */
+            transition: color 0.3s ease;
+        }
+
+        .skill-item:hover i {
+            color: var(--couleur-icone-hover); /* Icônes en cyan au survol */
+        }
+
+        .skill-item h3 {
+            font-size: 1.2em;
+            margin-top: 0;
+            color: var(--couleur-texte-clair);
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+        }
+        
+        /* Nouvelle couleur de bordure pour l'IA (mise en avant) */
+        .skill-item.skill-ia {
+            border: 2px solid var(--couleur-accent-rose);
+            box-shadow: 0 0 15px rgba(233, 69, 96, 0.5);
+        }
+
+
+        /* --- Section Projets --- */
+        .project-item {
+            /* Animation de "flip" subtile au survol */
+            perspective: 1000px;
+            transition: transform 0.6s ease;
+        }
+
+        .project-item:hover {
+            transform: rotateY(5deg) scale(1.03); /* Rotation subtile 3D */
+            box-shadow: 0 15px 40px rgba(0,0,0,0.8), 0 0 20px rgba(15, 52, 96, 0.7);
+        }
+
+        .project-item img {
+            opacity: 0.9;
+            transition: opacity 0.3s ease;
+        }
+        
+        .project-item:hover img {
+            opacity: 1;
+        }
+
+        .project-info {
+            padding: 20px;
+            background-color: var(--couleur-fond-secondaire);
+        }
+
+        .project-info h3 {
+            color: var(--couleur-accent-rose);
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.3em;
+            border-left: 3px solid var(--couleur-accent-cyan);
+            padding-left: 10px;
+        }
+
+        .project-links a {
+            padding: 5px 10px;
+            margin-right: 15px;
+            font-size: 0.9em;
+            background-color: var(--couleur-accent-cyan);
+            border-radius: 5px;
+            transition: background-color 0.3s ease, color 0.3s ease;
+            color: var(--couleur-texte-clair);
+            font-weight: 600;
+        }
+
+        .project-links a:hover {
+            background-color: var(--couleur-accent-rose);
+            color: var(--couleur-fond-primaire);
+        }
+
+        /* --- Section Contact --- */
+        .contact-info a {
+            /* Icônes de contact animées */
+            color: var(--couleur-texte-clair);
+            transition: color 0.3s ease, transform 0.3s ease;
+        }
+
+        .contact-info a:hover {
+            color: var(--couleur-accent-rose);
+            transform: translateX(10px);
+        }
+
+        .contact-info a svg {
+            fill: var(--couleur-accent-cyan);
+            transition: fill 0.3s ease;
+        }
+
+        .contact-info a:hover svg {
+            fill: var(--couleur-accent-rose);
+        }
+
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.5em;
+                letter-spacing: 2px;
+            }
+
+            #hero p {
+                 font-size: 1.2em;
+                 /* Pour mobile, on réduit la portée de l'effet typing */
+                white-space: normal;
+                overflow: visible;
+                border-right: none;
+                animation: none;
+            }
+
+            .skills-grid, .project-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <nav class="container">
+            <ul>
+                <li><a href="#hero">Accueil</a></li>
+                <li><a href="#about">À Propos</a></li>
+                <li><a href="#projects">Projets</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section id="hero" class="loaded">
+            <div class="profile-pic-container">
+                <img src="C360_20241101-093754-94.jpg" alt="Ta Photo de Profil" class="profile-pic">
+            </div>
+            <h1>Salut, je suis AppJos</h1>
+            <p>Ingénieur Logiciel | **IA/ML, Mobile Flutter, Full-Stack** | C#, JavaScript, Dart</p>
+            <a href="#projects" class="cta-button">Découvre mes projets</a>
+        </section>
+
+        <section id="about">
+            <div class="container">
+                <h2><i class="fas fa-microchip"></i> Mon Expertise Technique</h2>
+                <p>
+                    Fort de mon diplôme en ingénierie logicielle, je suis un développeur passionné par la création de solutions robustes et innovantes pour le web, le desktop et le mobile. Mon expertise s'étend sur C#, JavaScript et Dart, me permettant de naviguer avec aisance entre différents écosystèmes. **Je me spécialise dans l'intégration de l'Intelligence Artificielle (TensorFlow.js) et le développement de solutions de gestion modulaires, y compris l'Open Source.**
+                </p>
+                <div class="skills-grid">
+                    
+                    <div class="skill-item skill-ia">
+                        <i class="fas fa-brain"></i>
+                        <h3>Intelligence Artificielle & ML</h3>
+                        <p>TensorFlow.js, Apprentissage Automatique, Modèles (Classification/Régression), Intégration Client/Web.</p>
+                    </div>
+
+                    <div class="skill-item">
+                        <i class="fas fa-laptop-code"></i>
+                        <h3>Développement Web</h3>
+                        <p>HTML5, CSS3, JavaScript (React, Vue.js), Node.js, ASP.NET Core</p>
+                    </div>
+                    <div class="skill-item">
+                        <i class="fas fa-desktop"></i>
+                        <h3>Développement Desktop</h3>
+                        <p>C# (.NET, WPF, WinForms), Electron</p>
+                    </div>
+                    <div class="skill-item">
+                        <i class="fas fa-mobile-alt"></i>
+                        <h3>Développement Mobile</h3>
+                        <p>Dart (Flutter), Xamarin, Android/iOS</p>
+                    </div>
+                    <div class="skill-item">
+                        <i class="fas fa-database"></i>
+                        <h3>Bases de Données</h3>
+                        <p>SQL Server, MySQL, PostgreSQL, MongoDB, ORM (Entity Framework)</p>
+                    </div>
+                    <div class="skill-item">
+                        <i class="fas fa-tools"></i>
+                        <h3>Outils & Méthodes</h3>
+                        <p>Git, Docker, Agile (Scrum/Kanban), CI/CD, Testing Unitaire</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="projects">
+            <div class="container">
+                <h2><i class="fas fa-project-diagram"></i> Mes Réalisations</h2>
+                <p>Découvrez mes projets récents, de l'IA embarquée aux applications de gestion open source.</p>
+                <div class="project-grid">
+
+                    <div class="project-item">
+                        <img src="https://via.placeholder.com/400x220/16213E/E0E0E0?text=Gestion+Stock+Vente" alt="Logiciel de Gestion de Stock et Vente">
+                        <div class="project-info">
+                            <h3><i class="fas fa-truck-loading"></i> Système de Gestion de Stock & Vente</h3>
+                            <p>Solution **hybride (Desktop/Web)** pour la gestion d'inventaire, le suivi des ventes en temps réel, la génération de rapports et la facturation. Axé sur la performance et la fiabilité des transactions.</p>
+                            <div class="project-links">
+                                <a href="#"><i class="fas fa-eye"></i> Démo</a>
+                                <a href="#"><i class="fab fa-github"></i> Code</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="project-item">
+                        <img src="https://via.placeholder.com/400x220/16213E/E0E0E0?text=Chatbot+IA+TensorFlow.js" alt="Logiciel de Chat IA">
+                        <div class="project-info">
+                            <h3><i class="fas fa-robot"></i> Chat IA Intégré (TensorFlow.js)</h3>
+                            <p>Implémentation d'un agent conversationnel léger utilisant des modèles d'**Apprentissage Automatique côté client** avec **TensorFlow.js**. Réduit la latence et les coûts de serveur pour une expérience utilisateur rapide.</p>
+                            <div class="project-links">
+                                <a href="#"><i class="fas fa-eye"></i> Démo Live</a>
+                                <a href="#"><i class="fab fa-github"></i> Code</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="project-item">
+                        <img src="https://via.placeholder.com/400x220/16213E/E0E0E0?text=App+Mobile+Gestion" alt="Application Mobile Open Source">
+                        <div class="project-info">
+                            <h3><i class="fas fa-hand-holding-usd"></i> App Mobile Gestion de Projet & Caisse</h3>
+                            <p>Développement **Flutter/Dart** d'une application de gestion de projet et transactions de caisse. Contribué à un projet **Open Source**, démontrant des compétences en collaboration et en qualité de code.</p>
+                            <div class="project-links">
+                                <a href="#"><i class="fas fa-eye"></i> Aperçu</a>
+                                <a href="URL_DU_REPO_OPEN_SOURCE"><i class="fab fa-github"></i> Open Source</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="contact">
+            <div class="container">
+                <h2><i class="fas fa-envelope-open-text"></i> Connectons-nous</h2>
+                <p>J'adore les nouveaux défis. Intéressé par une collaboration ou un projet innovant ? Écrivez-moi !</p>
+                <div class="contact-info">
+                    <a href="mailto:josephmbanj@gmail.com">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+                        josephmbanj@gmail.com
+                    </a>
+                    <a href="https://linkedin.com/in/tonprofil" target="_blank">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
+                        LinkedIn
+                    </a>
+                    <a href="https://github.com/tonprofil" target="_blank">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.835 2.809 1.305 3.493.998.108-.776.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1-.322 3.301 1.23.959-.266 1.98-.399 3-.399.001 0 2.04 0 3 .399 2.29-1.552 3.281-1.23 3.281-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.197-6.095 8.197-11.389 0-6.627-5.373-12-12-12z"/></svg>
+                        GitHub
+                    </a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 AppJos. Tous droits réservés. | Conçu avec passion et code propre.</p>
+    </footer>
+
+    <script>
+        // JavaScript pour les animations
+        document.addEventListener('DOMContentLoaded', () => {
+            // Animation des sections au scroll
+            const sections = document.querySelectorAll('section');
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('loaded');
+                        // Ne pas arrêter l'observation pour l'effet de soulignement H2
+                        // observer.unobserve(entry.target); 
+                    } else {
+                        // Optionnel : Retirer la classe si la section sort complètement du viewport
+                        // entry.target.classList.remove('loaded');
+                    }
+                });
+            }, {
+                threshold: 0.1 // Déclenche l'animation quand 10% de la section est visible
+            });
+
+            sections.forEach(section => {
+                if (section.id !== 'hero') {
+                    observer.observe(section);
+                }
+            });
+        });
+    </script>
+</body>
+</html>
